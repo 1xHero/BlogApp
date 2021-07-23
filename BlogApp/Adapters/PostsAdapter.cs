@@ -15,39 +15,37 @@ using System.Linq;
 using System.Text;
 using Square.Picasso;
 using Java.Lang;
+using RecyclerViewSearch;
 
 namespace BlogApp.Adapters
 {
-    public class PostsAdapter:RecyclerView.Adapter
+    public class PostsAdapter:RecyclerView.Adapter,IFilterable
     {
-        
-
-
          Context context;
         public List<Post> list;
         public List<Post> listALL;
 
-        public PostsAdapter(Context context, List<Post> list)
+        public Filter Filter { get; private set; }
+
+
+        public PostsAdapter(Context context, IEnumerable<Post> list)
         {
             this.context = context;
-            this.list = list;
+            this.list = (List<Post>)list;
             this.listALL = new List<Post>(list);
+
+
+            Filter = new FilterHelper(this);
+
         }
 
         public override int ItemCount => list.Count;
-        
-
-        //public Filter Filter
-        //{
-        //    get { return FilterHelper.newInstance(this.listALL, this); }
-        //    //set { return FilterHelper.}
-        //}
 
 
-        //public Filter GetFilter()
-        //{
-        //    return Filter;
-        //}
+       public Filter GetFilter()
+        {
+            return Filter;
+        }
 
         public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
         {
@@ -74,16 +72,7 @@ namespace BlogApp.Adapters
             return postsHolder;
         }
 
-        public bool OnQueryTextChange(string newText)
-        {
-            
-            return false;
-        }
 
-        public bool OnQueryTextSubmit(string query)
-        {
-            return false;
-        }
     }
 
 
@@ -112,56 +101,70 @@ namespace BlogApp.Adapters
         }
 
     }
-    /*
+    
    public class FilterHelper : Filter
     {
-        static List<Post> currentList;
+                
         static PostsAdapter adapter;
 
-        public static FilterHelper newInstance(List<Post> currentList, PostsAdapter adapter)
+                
+        public FilterHelper(PostsAdapter adapter)
         {
             FilterHelper.adapter = adapter;
-            FilterHelper.currentList = currentList;
-            return new FilterHelper();
+                        
         }
 
         protected override FilterResults PerformFiltering(ICharSequence constraint)
         {
 
-
-            List<Post> filteredList = new List<Post>();
+            var returnObj = new FilterResults();
+            var results = new List<Post>();
 
             if(string.IsNullOrEmpty(constraint.ToString()))
             {
-                filteredList.AddRange(currentList);
+                results.AddRange(adapter.listALL);
             }
             else
             {
-                foreach (Post post in currentList)
+                foreach (Post post in adapter.listALL)
                 {
                     if (post.Desc.ToLower().Contains(constraint.ToString())
                         || post.User.UserName.ToLower().Contains(constraint.ToString()))
                     {
-                        filteredList.Add(post);
+                        results.Add(post);
                     }
                 }
 
                 
             }
-            FilterResults results = new FilterResults();
-            results.Count = filteredList.Count;
-            results.Values = (Java.Lang.Object)(object)filteredList;
 
-            return results;
+
+            //cringe code #_#
+            returnObj.Values = FromArray(results.Select(r => r.ToJavaObject()).ToArray());
+            returnObj.Count = results.Count;
+            
+
+            return returnObj;
         }
+
+        
 
         protected override void PublishResults(ICharSequence constraint, FilterResults results)
         {
-            adapter.list.Clear();
-            adapter.list.AddRange((IEnumerable<Post>)results.Values);
-            adapter.NotifyDataSetChanged();
+
+            using(var values = results.Values)
+            {
+                //cringe code #_#
+                adapter.list = values.ToArray<Java.Lang.Object>().Select(r => r.ToNetObject<Post>()).ToList();
+                adapter.NotifyDataSetChanged();
+
+                constraint.Dispose();
+                results.Dispose();
+            }
+
+
         }
-    }*/
+    }
 }
 
 

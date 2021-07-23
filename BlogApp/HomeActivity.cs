@@ -2,8 +2,10 @@
 using Android.Content;
 using Android.OS;
 using Android.Runtime;
+using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
+using AndroidX.Core.View;
 using BlogApp.Fragments;
 using Google.Android.Material.FloatingActionButton;
 using System;
@@ -11,11 +13,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+
 namespace BlogApp
 {
     [Activity]
-    public class HomeActivity : Activity
+    public class HomeActivity : AppCompatActivity
     {
+        
+
 
         FloatingActionButton fab;
         static int Gallery_ADD_POST = 2;
@@ -40,6 +45,9 @@ namespace BlogApp
         {
             fab = FindViewById<FloatingActionButton>(Resource.Id.fab);
 
+          
+
+
             fab.Click += delegate
             {
                 Intent i = new Intent(Intent.ActionPick);
@@ -63,5 +71,7 @@ namespace BlogApp
                 StartActivity(i);
             }
         }
+
+        
     }
 }

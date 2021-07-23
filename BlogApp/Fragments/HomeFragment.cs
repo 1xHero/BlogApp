@@ -13,23 +13,25 @@ using Org.Json;
 using RestSharp;
 using System;
 using System.Collections.Generic;
-
-
+using Android.Support.V7.Widget;
+using Android.Support.V7.App;
+using AndroidX.Core.App;
+using Android.Graphics;
 
 namespace BlogApp.Fragments
 {
     [Obsolete]
-    public class HomeFragment : Fragment
+    public class HomeFragment : Fragment, AndroidX.AppCompat.Widget.SearchView.IOnQueryTextListener
     {
         View view;
-        public static RecyclerView recyclerview;
+        public static AndroidX.RecyclerView.Widget.RecyclerView recyclerview;
         public static List<Post> list;
 
          ProgressDialog dialog;
 
         AndroidX.SwipeRefreshLayout.Widget.SwipeRefreshLayout refreshLayout;
         PostsAdapter postsAdapter;
-        Toolbar toolbar;
+        Android.Support.V7.Widget.Toolbar toolbar;
         IRestResponse response;
         ISharedPreferences pref;
         ISharedPreferencesEditor editor;
@@ -40,9 +42,6 @@ namespace BlogApp.Fragments
         {
             base.OnCreate(savedInstanceState);
 
-            // Create your fragment here
-
-            
 
         }
 
@@ -53,21 +52,23 @@ namespace BlogApp.Fragments
 
             view = inflater.Inflate(Resource.Layout.layout_home,container,false);
             init();
+         
             return view;
         }
 
         private void init()
         {
-            recyclerview = view.FindViewById<RecyclerView>(Resource.Id.recyclerHome);
+            recyclerview = view.FindViewById<AndroidX.RecyclerView.Widget.RecyclerView>(Resource.Id.recyclerHome);
             recyclerview.HasFixedSize = true;
-            recyclerview.SetLayoutManager(new LinearLayoutManager(Context));
+            recyclerview.SetLayoutManager(new AndroidX.RecyclerView.Widget.LinearLayoutManager(Context));
             refreshLayout = view.FindViewById<AndroidX.SwipeRefreshLayout.Widget.SwipeRefreshLayout>(Resource.Id.swipeHome);
-            toolbar = view.FindViewById<Toolbar>(Resource.Id.toolbarHome);
-            ((HomeActivity)Context).SetActionBar(toolbar);
-          //  SetHasOptionsMenu(true);
-            
+              toolbar = view.FindViewById<Android.Support.V7.Widget.Toolbar>(Resource.Id.toolbarHome);
+            //((HomeActivity)Context).SetActionBar(toolbar);
+            ((HomeActivity)Context).SetSupportActionBar(toolbar);
+            SetHasOptionsMenu(true);
 
-           getPosts(true);
+
+            getPosts(true);
 
             refreshLayout.Refresh += delegate
             {
@@ -187,38 +188,70 @@ namespace BlogApp.Fragments
             {
                 dialog.Dismiss();
             }
-            dialog.Dismiss();
+            
 
         }
 
-/*
+
+        private void notification_(string title, string channelName, string message, int id)
+        {
+            using (var notificationManager = NotificationManager.FromContext(Context))
+            {
+                // var title = "Error:";
+                // var channelName = "TestChannel";
+                if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
+                {
+                    NotificationChannel channel = null;
+                    if (channel == null)
+                    {
+                        channel = new NotificationChannel(channelName, channelName, NotificationImportance.Low)
+                        {
+                            LockscreenVisibility = NotificationVisibility.Public
+                        };
+                        channel.SetShowBadge(true);
+                        notificationManager.CreateNotificationChannel(channel);
+                    }
+                    channel.Dispose();
+                }
+                var bitMap = BitmapFactory.DecodeResource(Resources, Resource.Drawable.p1);
+#pragma warning disable CS0618 // Type or member is obsolete
+                var notificationBuilder = new NotificationCompat.Builder(Context)
+#pragma warning restore CS0618 // Type or member is obsolete
+                    .SetContentTitle(title)
+                    .SetContentText(message)
+                    .SetLargeIcon(bitMap)
+                    .SetShowWhen(false)
+                    .SetChannelId(channelName)
+                    .SetSmallIcon(Resource.Drawable.p1);
+
+                var notification = notificationBuilder.Build();
+                notificationManager.Notify(id, notification);
+            }
+        }
+
+
         public override void OnCreateOptionsMenu(IMenu menu, MenuInflater inflater)
         {
-            
-            inflater.Inflate(Resource.Menu.menu_search, menu);
-
-
-           var item = menu.FindItem(Resource.Id.search);
-            var searchView = MenuItemCompat.GetActionView(item);
-
-           var _searchView = searchView.JavaCast<SearchView>();
-
-            //_searchView.QueryTextChange += (s, e) =>
-            //{
-
-            //};
-
-            //_searchView.QueryTextSubmit += (s, e) =>
-            //{
-
-            //};
-
             base.OnCreateOptionsMenu(menu, inflater);
+
+            inflater.Inflate(Resource.Menu.menu_search, menu);
+            var item = menu.FindItem(Resource.Id.search);
+            AndroidX.AppCompat.Widget.SearchView searchView = (AndroidX.AppCompat.Widget.SearchView)item.ActionView;
+            searchView.SetOnQueryTextListener(this);
+                
         }
 
-        */
+        public bool OnQueryTextChange(string newText)
+        {
+            postsAdapter.Filter.InvokeFilter(newText);
+            return false;
+        }
 
-
+        public bool OnQueryTextSubmit(string newText)
+        {
+            postsAdapter.Filter.InvokeFilter(newText);
+            return false;
+        }
     }
 
 
