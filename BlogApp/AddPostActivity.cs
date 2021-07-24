@@ -78,7 +78,7 @@ namespace BlogApp
                 System.Console.WriteLine("[-] Exception: " + e);
             }
 
-            btnPost.Click += delegate
+            btnPost.Click +=delegate
             {
                 if(!String.IsNullOrEmpty(txtDesc.Text.ToString()))
                 {
@@ -92,12 +92,12 @@ namespace BlogApp
 
             };
 
-            btnBack.Click += delegate
+            btnBack.Click += (s, e) =>
             {
                 base.OnBackPressed();
             };
 
-            btnChangePhoto.Click += delegate
+            btnChangePhoto.Click += (s, e) =>
             {
                 Intent i = new Intent(Intent.ActionPick);
                 i.SetType("image/*");
@@ -188,7 +188,7 @@ namespace BlogApp
             {
 
                 // throw e;
-                Console.WriteLine("[-] Exc :" + e);
+                e.PrintStackTrace();
                 
             }
 

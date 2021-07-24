@@ -19,6 +19,7 @@ using Volley.Toolbox;
 
 namespace BlogApp.Fragments
 {
+    [Obsolete]
     class SignupFragment : Fragment, Android.Text.ITextWatcher
     {
         private View view;
@@ -26,8 +27,10 @@ namespace BlogApp.Fragments
         private TextInputEditText txtEmail, txtPassword, txtConfirm;
         private TextView txtSignIn;
         private Button btnSignUp;
+        [Obsolete]
         private ProgressDialog dialog;
 
+        [Obsolete]
         public SignupFragment()
         {
         }
@@ -84,12 +87,12 @@ namespace BlogApp.Fragments
             dialog = new ProgressDialog(Context);
             dialog.SetCancelable(false);
 
-            txtSignIn.Click += delegate
+            txtSignIn.Click += (s, e) =>
             {
                 Activity.FragmentManager.BeginTransaction().Replace(Resource.Id.frameAuthContainer, new SigninFragment()).Commit();
             };
 
-            btnSignUp.Click += delegate
+            btnSignUp.Click += (s, e) =>
             {
                 if (validate())
                 {
@@ -123,6 +126,7 @@ namespace BlogApp.Fragments
 
         }
 
+        [Obsolete]
         private void register(string email,string password)
         {
             dialog.SetMessage("Registering");

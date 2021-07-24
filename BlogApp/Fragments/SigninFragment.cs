@@ -71,12 +71,12 @@ namespace BlogApp.Fragments
 
             
 
-            txtSignUp.Click += delegate
+            txtSignUp.Click += (s, e) =>
             {
                 Activity.FragmentManager.BeginTransaction().Replace(Resource.Id.frameAuthContainer, new SignupFragment()).Commit();
             };
 
-            btnSignIn.Click += delegate
+            btnSignIn.Click += (s,e)=>
             {
                 if (validate())
                 {

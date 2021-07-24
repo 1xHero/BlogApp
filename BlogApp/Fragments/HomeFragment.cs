@@ -68,28 +68,18 @@ namespace BlogApp.Fragments
             SetHasOptionsMenu(true);
 
 
-            getPosts(true);
+            getPosts();
 
             refreshLayout.Refresh += delegate
             {
-                getPosts(false);
+                getPosts();
             };
         }
 
-        private void getPosts(bool first_time)
+        private void getPosts()
         {
 
-                dialog = new ProgressDialog(Context);
-                dialog.SetCancelable(true);
 
-            if(first_time==true)
-            {
-                
-                dialog.SetMessage("Loading Posts");
-                dialog.Indeterminate = true;
-                dialog.SetProgressStyle(Android.App.ProgressDialogStyle.Spinner);
-                dialog.Show();
-            }
 
             list = new List<Post>();
            // refreshLayout.Refreshing = true;
@@ -140,7 +130,7 @@ namespace BlogApp.Fragments
                         editor = pref.Edit();
                         editor.PutString("token", jobject.GetString("token"));
                         editor.Apply();    
-                        getPosts(false);
+                        getPosts();
                         return;
                     }
                     }
@@ -183,50 +173,7 @@ namespace BlogApp.Fragments
                 refreshLayout.Refreshing = false;
             }
             refreshLayout.Refreshing = false;
-
-            if(first_time==true)
-            {
-                dialog.Dismiss();
-            }
-            
-
-        }
-
-
-        private void notification_(string title, string channelName, string message, int id)
-        {
-            using (var notificationManager = NotificationManager.FromContext(Context))
-            {
-                // var title = "Error:";
-                // var channelName = "TestChannel";
-                if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
-                {
-                    NotificationChannel channel = null;
-                    if (channel == null)
-                    {
-                        channel = new NotificationChannel(channelName, channelName, NotificationImportance.Low)
-                        {
-                            LockscreenVisibility = NotificationVisibility.Public
-                        };
-                        channel.SetShowBadge(true);
-                        notificationManager.CreateNotificationChannel(channel);
-                    }
-                    channel.Dispose();
-                }
-                var bitMap = BitmapFactory.DecodeResource(Resources, Resource.Drawable.p1);
-#pragma warning disable CS0618 // Type or member is obsolete
-                var notificationBuilder = new NotificationCompat.Builder(Context)
-#pragma warning restore CS0618 // Type or member is obsolete
-                    .SetContentTitle(title)
-                    .SetContentText(message)
-                    .SetLargeIcon(bitMap)
-                    .SetShowWhen(false)
-                    .SetChannelId(channelName)
-                    .SetSmallIcon(Resource.Drawable.p1);
-
-                var notification = notificationBuilder.Build();
-                notificationManager.Notify(id, notification);
-            }
+                                 
         }
 
 
@@ -249,7 +196,7 @@ namespace BlogApp.Fragments
 
         public bool OnQueryTextSubmit(string newText)
         {
-            postsAdapter.Filter.InvokeFilter(newText);
+           // postsAdapter.Filter.InvokeFilter(newText);
             return false;
         }
     }

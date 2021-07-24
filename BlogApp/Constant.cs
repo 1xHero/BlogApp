@@ -20,5 +20,8 @@ namespace BlogApp
         public static string RSAVEUSERINFO = REGISTER + "/save_user_info";
         public static string POSTS = HOME + "/posts";
         public static string ADD_POST = POSTS + "/create";
+        public static string UPDATE_POST = POSTS + "/update";
+        public static string DELETE_POST = POSTS + "/delete";
+        public static string LIKE_POST = POSTS + "/like";
     }
 }

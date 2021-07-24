@@ -33,10 +33,10 @@ namespace BlogApp
             // Create your application here
 
             SetContentView(Resource.Layout.activity_home);
-            this.Title = "";
+            Title = "";
 
 
-            this.FragmentManager.BeginTransaction().Replace(Resource.Id.frameHomeContainer, new HomeFragment()).Commit();
+            FragmentManager.BeginTransaction().Replace(Resource.Id.frameHomeContainer, new HomeFragment()).Commit();
 
             init();
         }
